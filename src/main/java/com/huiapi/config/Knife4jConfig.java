@@ -45,7 +45,7 @@ public class Knife4jConfig {
      */
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("温室种植平台")
+                .title("灵动接口开放平台")
                 .description("接口文档")
                 .termsOfServiceUrl("http://www.yyhui.top")
                 .contact(new Contact("guqin", "http://www.yyhui.top", "xiaqingweb@163.com"))

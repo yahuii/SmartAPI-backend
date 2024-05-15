@@ -2,11 +2,14 @@ package com.huiapi.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.huiapi.annotation.AuthCheck;
 import com.huiapi.common.*;
 import com.huiapi.constant.CommonConstant;
 import com.huiapi.exception.BusinessException;
 import com.huiapi.model.dto.interfaceinfo.InterfaceInfoAddRequest;
+import com.huiapi.model.dto.interfaceinfo.InterfaceInfoInvokeRequest;
 import com.huiapi.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
 import com.huiapi.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
 import com.huiapi.model.entity.InterfaceInfo;
@@ -43,6 +46,9 @@ public class InterfaceInfoController {
 
     @Resource
     private HuiApiClient huiApiClient;
+
+    @Resource
+    private Gson gson;
 
     // region 增删改查
 
@@ -253,5 +259,45 @@ public class InterfaceInfoController {
         boolean result = interfaceInfoService.updateById(interfaceInfo);
         return ResultUtils.success(result);
     }
+
+    /**
+     *
+     * @param invokeRequest
+     * @return
+     */
+    @PostMapping("/invoke")
+    public BaseResponse<Object> invokeInterfaceInfo(@RequestBody InterfaceInfoInvokeRequest invokeRequest,
+                                                      HttpServletRequest request) {
+        if (invokeRequest == null || invokeRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+
+        Long userId = invokeRequest.getId();
+        String userRequestParams = invokeRequest.getUserRequestParams();
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(userId);
+        //判断是否存在
+        if(oldInterfaceInfo == null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"请求数据不存在");
+        }
+        if(oldInterfaceInfo.getStatus().equals(InterfaceInfoStatusEnum.OFFLINE.getValue())){
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR,"接口已关闭");
+        }
+
+        User loginUser = userService.getLoginUser(request);
+
+        String accessKey = loginUser.getAccessKey();
+        String secretKey = loginUser.getSecretKey();
+
+        com.huiapiclientsdk.model.User user =
+                gson.fromJson(userRequestParams, com.huiapiclientsdk.model.User.class);
+
+        HuiApiClient tempClient = new HuiApiClient(accessKey,secretKey);
+
+        String result = tempClient.getUserNameByPost(user);
+
+        return ResultUtils.success(result);
+    }
+
+
 
 }
