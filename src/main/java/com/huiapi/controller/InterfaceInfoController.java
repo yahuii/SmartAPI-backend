@@ -3,10 +3,7 @@ package com.huiapi.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.huiapi.annotation.AuthCheck;
-import com.huiapi.common.BaseResponse;
-import com.huiapi.common.DeleteRequest;
-import com.huiapi.common.ErrorCode;
-import com.huiapi.common.ResultUtils;
+import com.huiapi.common.*;
 import com.huiapi.constant.CommonConstant;
 import com.huiapi.exception.BusinessException;
 import com.huiapi.model.dto.interfaceinfo.InterfaceInfoAddRequest;
@@ -14,8 +11,10 @@ import com.huiapi.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
 import com.huiapi.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
 import com.huiapi.model.entity.InterfaceInfo;
 import com.huiapi.model.entity.User;
+import com.huiapi.model.enums.InterfaceInfoStatusEnum;
 import com.huiapi.service.InterfaceInfoService;
 import com.huiapi.service.UserService;
+import com.huiapiclientsdk.client.HuiApiClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -23,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,6 +40,9 @@ public class InterfaceInfoController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private HuiApiClient huiApiClient;
 
     // region 增删改查
 
@@ -195,5 +198,60 @@ public class InterfaceInfoController {
     }
 
     // endregion
+
+    /**
+     * 发布接口（仅管理员可操作）
+     * @param idRequest
+     * @return
+     */
+    @AuthCheck(mustRole = "admin")
+    @GetMapping("/get")
+    public BaseResponse<Boolean> onlineInterfaceInfo(@RequestBody IdRequest idRequest,
+                                                           HttpServletRequest request) {
+        if (idRequest == null || idRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        //判断接口是否存在
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(idRequest.getId());
+        if(oldInterfaceInfo == null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"请求数据不存在");
+        }
+        //判断接口是否可以调用
+        com.huiapiclientsdk.model.User user =new com.huiapiclientsdk.model.User();
+        user.setName("guqin");
+        String userName = huiApiClient.getUserNameByPost(user);
+        if(StringUtils.isBlank(userName)){
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR,"接口验证失败");
+        }
+        InterfaceInfo interfaceInfo = new InterfaceInfo();
+        interfaceInfo.setId(idRequest.getId());
+        interfaceInfo.setStatus(InterfaceInfoStatusEnum.ONLINE.getValue());
+        boolean result = interfaceInfoService.updateById(interfaceInfo);
+        return ResultUtils.success(result);
+    }
+
+
+    /**
+     * 下线接口（仅管理员可操作）
+     * @param idRequest
+     * @return
+     */
+    @AuthCheck(mustRole = "admin")
+    @GetMapping("/get")
+    public BaseResponse<Boolean> offlineInterfaceInfo(@RequestBody IdRequest idRequest) {
+        if (idRequest == null || idRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        //判断接口是否存在
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(idRequest.getId());
+        if(oldInterfaceInfo == null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"请求数据不存在");
+        }
+        InterfaceInfo interfaceInfo = new InterfaceInfo();
+        interfaceInfo.setId(idRequest.getId());
+        interfaceInfo.setStatus(InterfaceInfoStatusEnum.OFFLINE.getValue());
+        boolean result = interfaceInfoService.updateById(interfaceInfo);
+        return ResultUtils.success(result);
+    }
 
 }
