@@ -1,7 +1,6 @@
 package com.huiapi.model.enums;
 
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @author 顾琴

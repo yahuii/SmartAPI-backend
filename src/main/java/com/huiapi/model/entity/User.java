@@ -39,6 +39,15 @@ public class User implements Serializable {
      * 性别
      */
     private Integer gender;
+    /**
+     * accessKey
+     */
+    private String accessKey;
+
+    /**
+     * secretKey
+     */
+    private String secretKey;
 
     /**
      * 用户角色: user, admin

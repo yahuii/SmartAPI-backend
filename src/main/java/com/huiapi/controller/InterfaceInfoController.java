@@ -205,7 +205,7 @@ public class InterfaceInfoController {
      * @return
      */
     @AuthCheck(mustRole = "admin")
-    @GetMapping("/get")
+    @GetMapping("/online")
     public BaseResponse<Boolean> onlineInterfaceInfo(@RequestBody IdRequest idRequest,
                                                            HttpServletRequest request) {
         if (idRequest == null || idRequest.getId() <= 0) {
@@ -237,7 +237,7 @@ public class InterfaceInfoController {
      * @return
      */
     @AuthCheck(mustRole = "admin")
-    @GetMapping("/get")
+    @GetMapping("/offline")
     public BaseResponse<Boolean> offlineInterfaceInfo(@RequestBody IdRequest idRequest) {
         if (idRequest == null || idRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
