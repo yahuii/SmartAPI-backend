@@ -4,13 +4,15 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.huiapi.mapper.InterfaceInfoMapper">
 
-    <resultMap id="BaseResultMap" type="com.huiapi.model.entity.InterfaceInfo">
+    <resultMap id="BaseResultMap" type="com.huiapi.common.model.entity.InterfaceInfo">
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="name" column="name" jdbcType="VARCHAR"/>
             <result property="description" column="description" jdbcType="VARCHAR"/>
             <result property="url" column="url" jdbcType="VARCHAR"/>
             <result property="requestParams" column="requestParams" jdbcType="VARCHAR"/>
             <result property="requestHeader" column="requestHeader" jdbcType="VARCHAR"/>
+            <result property="methodName" column="methodName" jdbcType="VARCHAR"/>
+            <result property="paramType" column="paramType" jdbcType="VARCHAR"/>
             <result property="responseHeader" column="responseHeader" jdbcType="VARCHAR"/>
             <result property="status" column="status" jdbcType="INTEGER"/>
             <result property="method" column="method" jdbcType="VARCHAR"/>
@@ -22,8 +24,8 @@
 
     <sql id="Base_Column_List">
         id,name,description,
-        url,requestParams,
-        requestHeader,responseHeader,status,
+        url,requestParams,requestHeader,methodName
+        paramType,responseHeader,status,
         method,userId,
         createTime,updateTime,isDelete
     </sql>

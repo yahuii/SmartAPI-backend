@@ -1,23 +1,27 @@
 package com.huiapi.controller;
 
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
+import com.alibaba.nacos.shaded.com.google.common.reflect.TypeToken;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.huiapi.annotation.AuthCheck;
 import com.huiapi.common.*;
+import com.huiapi.common.model.entity.InterfaceInfo;
 import com.huiapi.constant.CommonConstant;
 import com.huiapi.exception.BusinessException;
 import com.huiapi.model.dto.interfaceinfo.InterfaceInfoAddRequest;
 import com.huiapi.model.dto.interfaceinfo.InterfaceInfoInvokeRequest;
 import com.huiapi.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
 import com.huiapi.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
-import com.huiapi.model.entity.InterfaceInfo;
-import com.huiapi.model.entity.User;
+
+import com.huiapi.common.model.entity.User;
 import com.huiapi.model.enums.InterfaceInfoStatusEnum;
 import com.huiapi.service.InterfaceInfoService;
 import com.huiapi.service.UserService;
 import com.huiapiclientsdk.client.HuiApiClient;
+import com.huiapiclientsdk.model.Weather;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -25,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
 
@@ -288,14 +294,30 @@ public class InterfaceInfoController {
         String accessKey = loginUser.getAccessKey();
         String secretKey = loginUser.getSecretKey();
 
-        com.huiapiclientsdk.model.User user =
-                gson.fromJson(userRequestParams, com.huiapiclientsdk.model.User.class);
+        String paramType = oldInterfaceInfo.getParamType();
 
-        HuiApiClient tempClient = new HuiApiClient(accessKey,secretKey);
 
-        String result = tempClient.getUserNameByPost(user);
+        //创建一个SDK客户端
+        HuiApiClient huiApiClient = new HuiApiClient(accessKey, secretKey);
+        //利用反射根据接口名称动态调用接口
+        Class<? extends HuiApiClient> huiApiClientClass = huiApiClient.getClass();
+        //根据接口名称获取方法
+        Method method;
+        try {
+            //判断用户是否传递了参数
+            if (StrUtil.isNotBlank(userRequestParams)) {
+                Class<?> clazz = Class.forName("com.huiapiclientsdk.model." + paramType);
+                method = huiApiClientClass.getMethod(oldInterfaceInfo.getMethodName(), clazz);
+                //调用方法
+                return ResultUtils.success(method.invoke(huiApiClient, JSONUtil.toBean(userRequestParams, clazz)));
+            }
+            method = huiApiClientClass.getMethod(oldInterfaceInfo.getName());
+            //调用方法
+            return ResultUtils.success(method.invoke(huiApiClient));
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
 
-        return ResultUtils.success(result);
     }
 
 

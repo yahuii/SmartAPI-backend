@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.huiapi.mapper.UserInterfaceInfoMapper">
 
-    <resultMap id="BaseResultMap" type="com.huiapi.model.entity.UserInterfaceInfo">
+    <resultMap id="BaseResultMap" type="com.huiapi.common.model.entity.UserInterfaceInfo">
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="userId" column="userId" jdbcType="BIGINT"/>
             <result property="interfaceInfoId" column="interfaceInfoId" jdbcType="BIGINT"/>
@@ -23,4 +23,8 @@
         method,createTime,updateTime,
         isDelete
     </sql>
+    <select id="listTopInvokeInterfaceInfo" resultType="com.huiapi.common.model.entity.UserInterfaceInfo">
+        select interfaceInfoId,sum(totalNum) as totalNum from user_interface_info group by interfaceInfoId
+        order by totalNum desc limit 3;
+    </select>
 </mapper>

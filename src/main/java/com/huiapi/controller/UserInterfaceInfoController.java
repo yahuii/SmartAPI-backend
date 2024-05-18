@@ -5,13 +5,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import com.huiapi.annotation.AuthCheck;
 import com.huiapi.common.*;
+import com.huiapi.common.model.entity.UserInterfaceInfo;
+import com.huiapi.common.service.InnerUserInterfaceInfoService;
 import com.huiapi.constant.CommonConstant;
 import com.huiapi.exception.BusinessException;
 import com.huiapi.model.dto.userinterfaceinfo.UserInterfaceInfoAddRequest;
 import com.huiapi.model.dto.userinterfaceinfo.UserInterfaceInfoQueryRequest;
 import com.huiapi.model.dto.userinterfaceinfo.UserInterfaceInfoUpdateRequest;
-import com.huiapi.model.entity.User;
-import com.huiapi.model.entity.UserInterfaceInfo;
+import com.huiapi.common.model.entity.User;
 import com.huiapi.service.UserInterfaceInfoService;
 import com.huiapi.service.UserService;
 import com.huiapiclientsdk.client.HuiApiClient;
@@ -32,7 +33,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/userInterfaceInfo")
 @Slf4j
-public class UserUserInterfaceInfoController {
+public class UserInterfaceInfoController {
 
     @Resource
     private UserInterfaceInfoService userInterfaceInfoService;
@@ -64,7 +65,7 @@ public class UserUserInterfaceInfoController {
         UserInterfaceInfo userInterfaceInfo = new UserInterfaceInfo();
         BeanUtils.copyProperties(userInterfaceInfoAddRequest, userInterfaceInfo);
         // 校验
-        userInterfaceInfoService.validUserInterfaceInfo(userInterfaceInfo, true);
+//        userInterfaceInfoService.validUserInterfaceInfo(userInterfaceInfo, true);
         User loginUser = userService.getLoginUser(request);
         userInterfaceInfo.setUserId(loginUser.getId());
         boolean result = userInterfaceInfoService.save(userInterfaceInfo);
@@ -120,7 +121,7 @@ public class UserUserInterfaceInfoController {
         UserInterfaceInfo userInterfaceInfo = new UserInterfaceInfo();
         BeanUtils.copyProperties(userInterfaceInfoUpdateRequest, userInterfaceInfo);
         // 参数校验
-        userInterfaceInfoService.validUserInterfaceInfo(userInterfaceInfo, false);
+//        userInterfaceInfoService.validUserInterfaceInfo(userInterfaceInfo, false);
         User user = userService.getLoginUser(request);
         long id = userInterfaceInfoUpdateRequest.getId();
         // 判断是否存在

@@ -1,4 +1,4 @@
-package com.huiapi.model.enums;
+package com.huiapi.common.model.enums;
 
 import lombok.Getter;
 

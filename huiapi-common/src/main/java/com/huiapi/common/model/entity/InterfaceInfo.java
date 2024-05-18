@@ -1,7 +1,6 @@
-package com.huiapi.model.entity;
+package com.huiapi.common.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -52,6 +51,16 @@ public class InterfaceInfo implements Serializable {
     private String requestHeader;
 
     /**
+     * SDK中的方法名
+     */
+    private String methodName;
+
+    /**
+     * 请求数据的Java类型
+     */
+    private String paramType;
+
+    /**
      * 响应头
      */
     private String responseHeader;
@@ -74,14 +83,12 @@ public class InterfaceInfo implements Serializable {
     /**
      * 创建时间
      */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date createTime;
 
 
     /**
      * 更新时间
      */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date updateTime;
 
     /**

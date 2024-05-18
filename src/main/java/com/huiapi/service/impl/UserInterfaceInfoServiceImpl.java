@@ -1,13 +1,13 @@
 package com.huiapi.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.huiapi.common.ErrorCode;
+import com.huiapi.common.model.entity.UserInterfaceInfo;
 import com.huiapi.exception.BusinessException;
-import com.huiapi.model.entity.UserInterfaceInfo;
-import com.huiapi.service.UserInterfaceInfoService;
 import com.huiapi.mapper.UserInterfaceInfoMapper;
-import org.apache.commons.lang3.StringUtils;
+import com.huiapi.service.UserInterfaceInfoService;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,28 +17,18 @@ import org.springframework.stereotype.Service;
 */
 @Service
 public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoMapper, UserInterfaceInfo>
-    implements UserInterfaceInfoService{
-
-    @Override
-    public void validUserInterfaceInfo(UserInterfaceInfo userInterfaceInfo, boolean b) {
-        if (userInterfaceInfo == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        // 创建时，所有参数必须非空
-        if (b) {
-            if (userInterfaceInfo.getInterfaceInfoId() <= 0 || userInterfaceInfo.getUserId() <= 0) {
-                throw new BusinessException(ErrorCode.PARAMS_ERROR);
-            }
-        }
-        if (userInterfaceInfo.getLeftNum() < 0 ) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "剩余次数不能小于0");
-        }
-    }
+    implements UserInterfaceInfoService {
 
     @Override
     public boolean invokeCount(long interfaceInfoId, long userId) {
         if(interfaceInfoId <=0 || userId <= 0){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        QueryWrapper<UserInterfaceInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("interfaceInfoId",interfaceInfoId).eq("userId",userId);
+        UserInterfaceInfo userInterfaceInfo = this.getOne(queryWrapper);
+        if(userInterfaceInfo.getLeftNum() == 0){
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR,"接口请求次数已用尽");
         }
         UpdateWrapper<UserInterfaceInfo> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("interfaceInfoId",interfaceInfoId);

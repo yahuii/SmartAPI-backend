@@ -1,6 +1,8 @@
-package com.huiapi.service;
+package com.huiapi.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.huiapi.common.model.entity.InterfaceInfo;
+import com.huiapi.common.model.entity.User;
 import com.huiapi.common.model.entity.UserInterfaceInfo;
 
 /**
@@ -8,7 +10,7 @@ import com.huiapi.common.model.entity.UserInterfaceInfo;
 * @description 针对表【user_interface_info(接口信息)】的数据库操作Service
 * @createDate 2024-05-15 19:55:56
 */
-public interface UserInterfaceInfoService extends IService<UserInterfaceInfo> {
+public interface InnerUserInterfaceInfoService{
 
 
     /**
@@ -17,5 +19,5 @@ public interface UserInterfaceInfoService extends IService<UserInterfaceInfo> {
      * @param userId
      * @return
      */
-    boolean invokeCount(long interfaceInfoId,long userId);
+    boolean invokeCount(long interfaceInfoId, long userId);
 }

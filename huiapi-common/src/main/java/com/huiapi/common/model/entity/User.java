@@ -1,23 +1,23 @@
-package com.huiapi.model.dto.user;
+package com.huiapi.common.model.entity;
 
-import com.huiapi.common.PageRequest;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 用户查询请求
+ * 用户
  *
- * @author yupi
+ * @TableName user
  */
-@EqualsAndHashCode(callSuper = true)
+@TableName(value = "user")
 @Data
-public class UserQueryRequest extends PageRequest implements Serializable {
+public class User implements Serializable {
     /**
      * id
      */
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     /**
@@ -39,11 +39,25 @@ public class UserQueryRequest extends PageRequest implements Serializable {
      * 性别
      */
     private Integer gender;
+    /**
+     * accessKey
+     */
+    private String accessKey;
+
+    /**
+     * secretKey
+     */
+    private String secretKey;
 
     /**
      * 用户角色: user, admin
      */
     private String userRole;
+
+    /**
+     * 密码
+     */
+    private String userPassword;
 
     /**
      * 创建时间
@@ -55,5 +69,12 @@ public class UserQueryRequest extends PageRequest implements Serializable {
      */
     private Date updateTime;
 
+    /**
+     * 是否删除
+     */
+    @TableLogic
+    private Integer isDelete;
+
+    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

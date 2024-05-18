@@ -2,15 +2,16 @@ package com.huiapi.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.huiapi.common.ErrorCode;
+import com.huiapi.common.model.entity.InterfaceInfo;
 import com.huiapi.exception.BusinessException;
 import com.huiapi.mapper.InterfaceInfoMapper;
-import com.huiapi.model.entity.InterfaceInfo;
 import com.huiapi.service.InterfaceInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 /**
  *
+ * @author 顾琴
  */
 @Service
 public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, InterfaceInfo>

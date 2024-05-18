@@ -1,4 +1,4 @@
-package com.huiapi.model.vo;
+package com.huiapi.common.model.vo;
 
 import lombok.Data;
 
