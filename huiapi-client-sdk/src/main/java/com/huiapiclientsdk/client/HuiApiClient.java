@@ -110,6 +110,13 @@ public class HuiApiClient {
                 .execute().body();
     }
 
+    public String getTodayHistory(){
+        return HttpRequest.get(GATEWAY_HOST+"/api/history/today")
+                .addHeaders(getHeaderMap(""))
+                .header("Content-Type","application/json;charset=UTF-8")
+                .execute().body();
+    }
+
 
 
 

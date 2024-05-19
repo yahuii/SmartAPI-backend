@@ -1,12 +1,12 @@
 package com.huiapi.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import com.huiapi.annotation.AuthCheck;
 import com.huiapi.common.*;
 import com.huiapi.common.model.entity.UserInterfaceInfo;
-import com.huiapi.common.service.InnerUserInterfaceInfoService;
 import com.huiapi.constant.CommonConstant;
 import com.huiapi.exception.BusinessException;
 import com.huiapi.model.dto.userinterfaceinfo.UserInterfaceInfoAddRequest;
@@ -67,7 +67,20 @@ public class UserInterfaceInfoController {
         // 校验
 //        userInterfaceInfoService.validUserInterfaceInfo(userInterfaceInfo, true);
         User loginUser = userService.getLoginUser(request);
+
+        //查看是否已经有了记录了
+        LambdaQueryWrapper<UserInterfaceInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(UserInterfaceInfo::getUserId,loginUser.getId());
+        lambdaQueryWrapper.eq(UserInterfaceInfo::getInterfaceInfoId,
+                userInterfaceInfoAddRequest.getInterfaceInfoId());
+        UserInterfaceInfo oldUserInterfaceInfo = userInterfaceInfoService.getOne(lambdaQueryWrapper);
+        if(oldUserInterfaceInfo != null){
+            return ResultUtils.success(oldUserInterfaceInfo.getId());
+        }
+
+        //添加用户与该接口的调用次数
         userInterfaceInfo.setUserId(loginUser.getId());
+        userInterfaceInfo.setLeftNum(20);
         boolean result = userInterfaceInfoService.save(userInterfaceInfo);
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);

@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.huiapi.huiapiinterface.constant.FreeAPIConstant.OUTER_INTERFACE_ID;
+import static com.huiapi.huiapiinterface.constant.FreeAPIConstant.OUTER_INTERFACE_KEY;
+
 /**
  * @author 顾琴
  */
@@ -15,9 +18,7 @@ import java.util.Map;
 @RequestMapping("/weather")
 public class WeatherController {
 
-    private static final String OUTER_INTERFACE_ID = "88888888";
 
-    private static final String OUTER_INTERFACE_KEY = "88888888";
 
 
     @PostMapping("/now")
@@ -47,7 +48,7 @@ public class WeatherController {
         paramsMap.put("sheng",weather.getProvince());
         paramsMap.put("place",weather.getPlace());
 
-        return HttpRequest.get("https://cn.apihz.cn/api/tianqi/tqyb.php")
+        return HttpRequest.get("https://cn.apihz.cn/api/tianqi/tqybmoji15.php")
                 .form(paramsMap)
                 .execute().body();
     }

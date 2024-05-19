@@ -8,8 +8,8 @@ import lombok.Getter;
 @Getter
 public enum InterfaceInfoStatusEnum {
 
-    ONLINE("上线",0),
-    OFFLINE("下线",1);
+    ONLINE("上线",1),
+    OFFLINE("下线",0);
 
 
     private final String text;

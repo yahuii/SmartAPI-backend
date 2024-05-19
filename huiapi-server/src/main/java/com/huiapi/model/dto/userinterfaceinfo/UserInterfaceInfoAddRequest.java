@@ -37,4 +37,6 @@ public class UserInterfaceInfoAddRequest implements Serializable {
      */
     private Integer status;
 
+    private String method;
+
 }

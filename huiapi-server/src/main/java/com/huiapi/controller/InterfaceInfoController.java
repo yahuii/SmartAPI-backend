@@ -2,13 +2,14 @@ package com.huiapi.controller;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
-import com.alibaba.nacos.shaded.com.google.common.reflect.TypeToken;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import com.huiapi.annotation.AuthCheck;
 import com.huiapi.common.*;
 import com.huiapi.common.model.entity.InterfaceInfo;
+import com.huiapi.common.model.entity.UserInterfaceInfo;
 import com.huiapi.constant.CommonConstant;
 import com.huiapi.exception.BusinessException;
 import com.huiapi.model.dto.interfaceinfo.InterfaceInfoAddRequest;
@@ -19,9 +20,9 @@ import com.huiapi.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
 import com.huiapi.common.model.entity.User;
 import com.huiapi.model.enums.InterfaceInfoStatusEnum;
 import com.huiapi.service.InterfaceInfoService;
+import com.huiapi.service.UserInterfaceInfoService;
 import com.huiapi.service.UserService;
 import com.huiapiclientsdk.client.HuiApiClient;
-import com.huiapiclientsdk.model.Weather;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -29,9 +30,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -46,6 +45,9 @@ public class InterfaceInfoController {
 
     @Resource
     private InterfaceInfoService interfaceInfoService;
+
+    @Resource
+    private UserInterfaceInfoService userInterfaceInfoService;
 
     @Resource
     private UserService userService;
@@ -278,9 +280,9 @@ public class InterfaceInfoController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
 
-        Long userId = invokeRequest.getId();
+        Long interfaceId = invokeRequest.getId();
         String userRequestParams = invokeRequest.getUserRequestParams();
-        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(userId);
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(interfaceId);
         //判断是否存在
         if(oldInterfaceInfo == null){
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"请求数据不存在");
@@ -290,9 +292,25 @@ public class InterfaceInfoController {
         }
 
         User loginUser = userService.getLoginUser(request);
-
+        //判断用户是否有权限
         String accessKey = loginUser.getAccessKey();
         String secretKey = loginUser.getSecretKey();
+        //如果没有签名和密钥，则抛出异常
+        if (StringUtils.isAnyBlank(accessKey, secretKey)) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+        }
+        //判断用户是否还有调用次数
+        LambdaQueryWrapper<UserInterfaceInfo> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(UserInterfaceInfo::getInterfaceInfoId, oldInterfaceInfo.getId());
+        wrapper.eq(UserInterfaceInfo::getUserId, loginUser.getId());
+        UserInterfaceInfo userInterfaceInfo = userInterfaceInfoService.getOne(wrapper);
+        if (userInterfaceInfo == null) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+        }
+        if (userInterfaceInfo.getLeftNum() == 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+
 
         String paramType = oldInterfaceInfo.getParamType();
 
@@ -311,7 +329,7 @@ public class InterfaceInfoController {
                 //调用方法
                 return ResultUtils.success(method.invoke(huiApiClient, JSONUtil.toBean(userRequestParams, clazz)));
             }
-            method = huiApiClientClass.getMethod(oldInterfaceInfo.getName());
+            method = huiApiClientClass.getMethod(oldInterfaceInfo.getMethodName());
             //调用方法
             return ResultUtils.success(method.invoke(huiApiClient));
         } catch (Exception e) {
