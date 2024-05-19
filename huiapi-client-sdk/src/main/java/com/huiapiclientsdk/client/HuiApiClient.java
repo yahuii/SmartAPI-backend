@@ -5,6 +5,8 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import com.google.gson.Gson;
+import com.huiapiclientsdk.model.AIContent;
+import com.huiapiclientsdk.model.TranslateContent;
 import com.huiapiclientsdk.model.User;
 import com.huiapiclientsdk.model.Weather;
 import lombok.AllArgsConstructor;
@@ -113,6 +115,28 @@ public class HuiApiClient {
     public String getTodayHistory(){
         return HttpRequest.get(GATEWAY_HOST+"/api/history/today")
                 .addHeaders(getHeaderMap(""))
+                .header("Content-Type","application/json;charset=UTF-8")
+                .execute().body();
+    }
+
+    public String getChatWithAI(AIContent content){
+        Map<String,Object> paramMap = new HashMap<>();
+        paramMap.put("content",content.getContent());
+        String jsonStr = JSONUtil.toJsonStr(paramMap);
+        return HttpRequest.post(GATEWAY_HOST+"/api/AI/chat")
+                .addHeaders(getHeaderMap(jsonStr))
+                .body(jsonStr)
+                .header("Content-Type","application/json;charset=UTF-8")
+                .execute().body();
+    }
+
+    public String getTranslateContent(TranslateContent content){
+        Map<String,Object> paramMap = new HashMap<>();
+        paramMap.put("content",content.getContent());
+        String jsonStr = JSONUtil.toJsonStr(paramMap);
+        return HttpRequest.get(GATEWAY_HOST+"/api/translate/get")
+                .addHeaders(getHeaderMap(jsonStr))
+                .body(jsonStr)
                 .header("Content-Type","application/json;charset=UTF-8")
                 .execute().body();
     }

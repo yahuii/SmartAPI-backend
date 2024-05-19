@@ -3,6 +3,7 @@ package com.huiapi.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
+import com.huiapi.annotation.AuthCheck;
 import com.huiapi.common.BaseResponse;
 import com.huiapi.common.DeleteRequest;
 import com.huiapi.common.ErrorCode;
@@ -147,6 +148,15 @@ public class UserController {
         return ResultUtils.success(b);
     }
 
+    @PutMapping("/update")
+    @AuthCheck(mustRole = "admin")
+    public BaseResponse<Boolean> updateUser(@RequestBody UserUpdateRequest userUpdateRequest, HttpServletRequest request) {
+        if (userUpdateRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        boolean b = userService.updateUser(userUpdateRequest, request);
+        return ResultUtils.success(b);
+    }
 
     /**
      * 根据 id 获取用户

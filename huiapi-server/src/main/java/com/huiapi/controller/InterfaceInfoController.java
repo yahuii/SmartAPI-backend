@@ -308,7 +308,7 @@ public class InterfaceInfoController {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         if (userInterfaceInfo.getLeftNum() == 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"请求次数已用尽");
         }
 
 

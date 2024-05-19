@@ -1,12 +1,16 @@
 package com.huiapi.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.huiapi.common.ErrorCode;
 import com.huiapi.common.model.entity.User;
 import com.huiapi.exception.BusinessException;
 import com.huiapi.mapper.UserMapper;
+import com.huiapi.model.dto.user.UserUpdateRequest;
 import com.huiapi.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -162,7 +166,37 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         request.getSession().removeAttribute(USER_LOGIN_STATE);
         return true;
     }
-
+    @Override
+    public boolean updateUser(UserUpdateRequest userUpdateRequest, HttpServletRequest request) {
+        Long id = userUpdateRequest.getId();
+        String userAccount = userUpdateRequest.getUserAccount();
+        String email = userUpdateRequest.getEmail();
+        Integer status = userUpdateRequest.getStatus();
+        //判断部分参数是否合法
+        if (id == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if (StrUtil.isBlank(userAccount) && StrUtil.isBlank(email)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        //查询邮箱是否存在
+        LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<>();
+        wrapper.eq(User::getUserAccount, userAccount);
+        User user = this.getOne(wrapper);
+        //获取当前登录用户
+        User loginUser = this.getLoginUser(request);
+        //如果邮箱存在且邮箱为其他用户所有，则抛出异常
+//        if (user != null && !loginUser.getId().equals(user.getId())) {
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+//        }
+        if (status == null) {
+            userUpdateRequest.setStatus(0);
+        }
+        //更新
+        user = new User();
+        BeanUtil.copyProperties(userUpdateRequest, user);
+        return this.updateById(user);
+    }
 }
 
 

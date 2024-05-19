@@ -150,6 +150,31 @@ public class UserInterfaceInfoController {
         return ResultUtils.success(result);
     }
 
+    @GetMapping("/get/left")
+    public BaseResponse<Integer> getLeftNum(@RequestParam Long interfaceInfoId,
+                                            HttpServletRequest request){
+        UserInterfaceInfo userInterfaceInfo =
+                userInterfaceInfoService.getUserInterfaceInfoByInterfaceId(interfaceInfoId, request);
+        return ResultUtils.success(userInterfaceInfo.getLeftNum());
+
+    }
+
+    /**
+     * 根据 接口id和用户id 获取并添加调用次数
+     *
+     */
+    @PostMapping("/add/count")
+    public BaseResponse<Boolean> addInvokeCount(@RequestParam Long interfaceInfoId,
+                                                HttpServletRequest request) {
+        UserInterfaceInfo userInterfaceInfo =
+                userInterfaceInfoService.getUserInterfaceInfoByInterfaceId(interfaceInfoId, request);
+
+        userInterfaceInfo.setLeftNum(userInterfaceInfo.getLeftNum() + 20);
+
+        boolean result = userInterfaceInfoService.updateById(userInterfaceInfo);
+        return ResultUtils.success(result);
+    }
+
     /**
      * 根据 id 获取
      *

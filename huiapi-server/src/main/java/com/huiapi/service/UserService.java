@@ -3,6 +3,7 @@ package com.huiapi.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.huiapi.common.model.entity.User;
+import com.huiapi.model.dto.user.UserUpdateRequest;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -56,4 +57,6 @@ public interface UserService extends IService<User> {
      * @return
      */
     boolean userLogout(HttpServletRequest request);
+
+    boolean updateUser(UserUpdateRequest userUpdateRequest, HttpServletRequest request);
 }

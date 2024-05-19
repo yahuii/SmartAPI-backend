@@ -3,6 +3,8 @@ package com.huiapi.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.huiapi.common.model.entity.UserInterfaceInfo;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
 * @author 顾琴
 * @description 针对表【user_interface_info(接口信息)】的数据库操作Service
@@ -18,4 +20,8 @@ public interface UserInterfaceInfoService extends IService<UserInterfaceInfo> {
      * @return
      */
     boolean invokeCount(long interfaceInfoId,long userId);
+
+    UserInterfaceInfo getUserInterfaceInfoByInterfaceId(long interfaceInfoId, HttpServletRequest request);
+
+
 }
