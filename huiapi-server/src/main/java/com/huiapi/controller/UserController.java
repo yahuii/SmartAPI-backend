@@ -16,9 +16,17 @@ import com.huiapi.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -110,7 +118,6 @@ public class UserController {
     // endregion
 
     // region 增删改查
-
     /**
      * 创建用户
      *
@@ -229,4 +236,12 @@ public class UserController {
     }
 
     // endregion
+
+    @GetMapping ("/download/sdk")
+    public void downLoadSDK(HttpServletResponse response) {
+        if(response == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        userService.downLoadSDK(response);
+    }
 }

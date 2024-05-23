@@ -4,8 +4,8 @@ spring:
   # DataSource Config
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/huiapi
-    username: root
+    url: jdbc:mysql://47.107.84.87:3306/huiapi
+    username: guqin
     password: 123456
   mvc:
     pathmatch:
@@ -20,9 +20,17 @@ spring:
     host: 127.0.0.1
     database: 0
 server:
-  port: 7529
+  port: 8081
   servlet:
     context-path: /api
+    session:
+      cookie:
+        same-site: none
+        secure: true
+#  ssl:
+#    key-store: classpath:full_chain.pem
+#    key-store-type: PKCS12
+#    key-store-password: 123456
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
@@ -44,4 +52,8 @@ dubbo:
     port: -1
   registry:
     id: nacos-registry
-    address: nacos://localhost:8848
+    address: nacos://38.181.158.67:8848 #nacos://38.181.158.67:8848
+    simplified: true
+  metadata-report:
+    address: nacos://38.181.158.67:8848
+

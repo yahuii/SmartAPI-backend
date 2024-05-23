@@ -71,7 +71,7 @@
                 <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>com.huiapi.huiapiinterface.HuiapiInterfaceApplication</mainClass>
-                    <skip>true</skip>
+<!--                    <skip>true</skip>-->
                 </configuration>
                 <executions>
                     <execution>

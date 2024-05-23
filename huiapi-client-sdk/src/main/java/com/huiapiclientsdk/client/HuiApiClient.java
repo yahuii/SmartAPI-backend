@@ -28,7 +28,7 @@ import static com.huiapiclientsdk.util.SignUtils.genSecret;
 public class HuiApiClient {
 
 
-    private static final String GATEWAY_HOST = "http://localhost:8182";
+    private static final String GATEWAY_HOST = "http://47.107.84.87:8182";
 
     private String accessKey;
     private String secretKey;
