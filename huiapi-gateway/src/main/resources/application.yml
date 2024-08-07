@@ -24,3 +24,6 @@ dubbo:
   registry:
     id: nacos-registry
     address: nacos://localhost:8848
+    simplified: true
+  metadata-report:
+    address: nacos://localhost:8848

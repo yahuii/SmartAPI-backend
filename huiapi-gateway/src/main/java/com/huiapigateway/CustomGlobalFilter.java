@@ -40,7 +40,7 @@ import java.util.*;
 public class CustomGlobalFilter implements GlobalFilter, Ordered {
 
 
-    private List<String> IP_WHITE_LIST = Arrays.asList("127.0.0.1");
+//    private List<String> IP_WHITE_LIST = Arrays.asList("127.0.0.1");
 
 
     @DubboReference
@@ -71,9 +71,9 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         //访问控制 - 黑白名单
         String hostString = request.getLocalAddress().getHostString();
         ServerHttpResponse response = exchange.getResponse();
-        if(!IP_WHITE_LIST.contains(hostString)){
-            return handleNoAuth(response);
-        }
+//        if(!IP_WHITE_LIST.contains(hostString)){
+//            return handleNoAuth(response);
+//        }
 
         //用户鉴权 AK SK 合法判断
         HttpHeaders headers = request.getHeaders();
