@@ -1,7 +1,6 @@
 package com.huiapi.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -20,10 +19,6 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.io.*;
-import java.nio.file.Files;
 
 import static com.huiapi.constant.UserConstant.ADMIN_ROLE;
 import static com.huiapi.constant.UserConstant.USER_LOGIN_STATE;
@@ -201,23 +196,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         user = new User();
         BeanUtil.copyProperties(userUpdateRequest, user);
         return this.updateById(user);
-    }
-
-    @Override
-    public void downLoadSDK(HttpServletResponse response) {
-        response.setContentType("application/octet-stream");
-
-        response.setHeader("Content-Disposition", "attachment; filename=huiapi-client-sdk.zip");
-
-        String filePath = "/usr/src/huiapi-client-sdk.zip";
-        File sdkFile = new File(filePath);
-        try (InputStream inputStream = new FileInputStream(sdkFile);
-             OutputStream outputStream = response.getOutputStream()) {
-            //将jar包写入响应体中
-            IoUtil.copy(inputStream, outputStream);
-        } catch (IOException e) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
     }
 }
 

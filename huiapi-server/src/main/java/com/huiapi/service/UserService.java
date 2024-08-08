@@ -6,7 +6,6 @@ import com.huiapi.common.model.entity.User;
 import com.huiapi.model.dto.user.UserUpdateRequest;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * 用户服务
@@ -60,6 +59,4 @@ public interface UserService extends IService<User> {
     boolean userLogout(HttpServletRequest request);
 
     boolean updateUser(UserUpdateRequest userUpdateRequest, HttpServletRequest request);
-
-    void downLoadSDK(HttpServletResponse response);
 }
